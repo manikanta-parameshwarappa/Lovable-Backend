@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface ProjectService {
     List<ProjectSummaryResponse> getUserProjects(Long userId);
-    ProjectResponse getUserProjectById(Long projectId);
+    ProjectResponse getUserProjectById(Long userId, Long projectId);
     ProjectResponse createProject(ProjectRequest request,Long userId);
     ProjectResponse updateProject(Long id, ProjectRequest request, Long userId);
     void softDeleteProject(Long id, Long userId);

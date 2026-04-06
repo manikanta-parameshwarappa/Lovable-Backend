@@ -45,32 +45,32 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public ProjectResponse getUserProjectById(Long projectId) {
-        // find what s the use case of the userid ? user1 user2/1
-        // maybe this should be custom ? becuase if we try to get the peoject with the deleted id this should not work!
-        Project project = projectRepository.findById(projectId).orElseThrow();
-        if(project.getDeletedAt() != null){
-            // for now i don't know how to handle this , custom exception , because the return type has to be the project response
-//            return new Exception("Project Not found");
-        }
+    public ProjectResponse getUserProjectById(Long userId, Long projectId) {
+        Project project = getAccessibleProjectById(userId, projectId);
         return projectMapper.toProjectResponse(project);
     }
 
     @Override
-    public ProjectResponse updateProject(Long id, ProjectRequest request, Long userId) {
-        // while finding the userid check if he has access to it based on the useId?? i will deal with this in the security class!
-        // maybe this should be custom ? becuase if we try to get the peoject with the deleted id this should not work!
-        Project project = projectRepository.findById(id).orElseThrow();
+    public ProjectResponse updateProject(Long projectId, ProjectRequest request, Long userId) {
+        Project project = getAccessibleProjectById(userId, projectId);
         project.setName(request.name());
         project = projectRepository.save(project);
         return projectMapper.toProjectResponse(project);
     }
 
     @Override
-    public void softDeleteProject(Long id, Long userId) {
-        // while finding the userid check if he has access to it based on the useId?? i will deal with this in the security class!
-        Project project = projectRepository.findById(id).orElseThrow();
+    public void softDeleteProject(Long projectId, Long userId) {
+        Project project = getAccessibleProjectById(userId, projectId);
+        if(!project.getOwner().getId().equals(userId)){
+            throw new RuntimeException("you are not allowed to delete");
+        }
+
         project.setDeletedAt(Instant.now());
         project = projectRepository.save(project);
+    }
+
+    // Internal Functions
+    public Project getAccessibleProjectById(Long userId, Long projectId){
+        return projectRepository.findAccessibleProjectById(userId, projectId).orElseThrow();
     }
 }
