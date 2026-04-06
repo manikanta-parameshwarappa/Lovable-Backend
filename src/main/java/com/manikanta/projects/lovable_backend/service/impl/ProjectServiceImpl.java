@@ -23,7 +23,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-@Transactional
+@Transactional // checks and commit the dirtied fields , so no need to explicitly save , but its good practise to save explicitly
 public class ProjectServiceImpl implements ProjectService {
 
     ProjectRepository projectRepository;
@@ -66,7 +66,7 @@ public class ProjectServiceImpl implements ProjectService {
         }
 
         project.setDeletedAt(Instant.now());
-        project = projectRepository.save(project);
+        projectRepository.save(project);
     }
 
     // Internal Functions
