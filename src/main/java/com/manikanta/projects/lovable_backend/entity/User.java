@@ -22,10 +22,10 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-    String avatarUrl;
+
+    String username;
+    String password;
     String name;
-    String email;
-    String passwordHash;
 
     @CreationTimestamp
     Instant createdAt;

@@ -14,7 +14,7 @@ public interface ProjectMemberMapper {
 
     //nested dto mapping
     @Mapping(target = "userId", source = "user.id")
-    @Mapping(target = "email", source = "user.email")
+    @Mapping(target = "username", source = "user.username")
     @Mapping(target = "name", source = "user.name")
     MemeberResponse toProjectMemberResponseFromMember(ProjectMember projectMember);
 }
