@@ -8,8 +8,7 @@ public record MemeberResponse(
         Long userId,
         String email,
         String name,
-        String avatarUrl,
-        ProjectMemberRole role,
+        ProjectMemberRole projectMemberRole,
         Instant invitedAt
 ) {
 }

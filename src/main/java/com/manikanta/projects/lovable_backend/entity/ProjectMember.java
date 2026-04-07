@@ -1,9 +1,8 @@
 package com.manikanta.projects.lovable_backend.entity;
 
 import com.manikanta.projects.lovable_backend.enums.ProjectMemberRole;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.Instant;
@@ -11,10 +10,23 @@ import java.time.Instant;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Getter
 @Setter
+@Entity
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+@Table(name = "project_members")
 public class ProjectMember {
+    @EmbeddedId
     ProjectMemberId id;
-    Project project;
+
+    @ManyToOne
+    @MapsId("projectId")
+    Project project; // we don't need joins table so ignore many to many
+
     ProjectMemberRole role;
-    User InvitedBy;
-    Instant InvitedAt;
+
+    @ManyToOne
+    @MapsId("userId")
+    User user;
+    Instant invitedAt;
 }
