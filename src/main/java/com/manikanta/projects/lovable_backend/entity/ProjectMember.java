@@ -23,10 +23,14 @@ public class ProjectMember {
     @MapsId("projectId")
     Project project; // we don't need joins table so ignore many to many
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     ProjectMemberRole role;
 
     @ManyToOne
     @MapsId("userId")
     User user;
     Instant invitedAt;
+
+    Instant acceptedAt;
 }

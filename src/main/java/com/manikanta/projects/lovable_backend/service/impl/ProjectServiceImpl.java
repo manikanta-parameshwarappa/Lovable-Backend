@@ -4,9 +4,13 @@ import com.manikanta.projects.lovable_backend.dto.project.ProjectRequest;
 import com.manikanta.projects.lovable_backend.dto.project.ProjectResponse;
 import com.manikanta.projects.lovable_backend.dto.project.ProjectSummaryResponse;
 import com.manikanta.projects.lovable_backend.entity.Project;
+import com.manikanta.projects.lovable_backend.entity.ProjectMember;
+import com.manikanta.projects.lovable_backend.entity.ProjectMemberId;
 import com.manikanta.projects.lovable_backend.entity.User;
+import com.manikanta.projects.lovable_backend.enums.ProjectMemberRole;
 import com.manikanta.projects.lovable_backend.error.ResourceNotFoundException;
 import com.manikanta.projects.lovable_backend.mapper.ProjectMapper;
+import com.manikanta.projects.lovable_backend.repository.ProjectMemberRepository;
 import com.manikanta.projects.lovable_backend.repository.ProjectRepository;
 import com.manikanta.projects.lovable_backend.repository.UserRepository;
 import com.manikanta.projects.lovable_backend.service.ProjectService;
@@ -30,12 +34,25 @@ public class ProjectServiceImpl implements ProjectService {
     ProjectRepository projectRepository;
     UserRepository userRepository;
     ProjectMapper projectMapper;
+    ProjectMemberRepository projectMemberRepository;
 
     @Override
     public ProjectResponse createProject(ProjectRequest request, Long userId) {
         User owner = userRepository.findById(userId).orElseThrow();
-        Project project = Project.builder().name(request.name()).owner(owner).isPublic(false).build(); // why its not default ?
+        Project project = Project.builder().name(request.name()).isPublic(false).build(); // why its not default ?
+        ProjectMemberId projectMemberId = new ProjectMemberId(project.getId(), owner.getId());
+        ProjectMember projectMember = ProjectMember.builder()
+                .id(projectMemberId)
+                .role(ProjectMemberRole.OWNER)
+                .user(owner)
+                .acceptedAt(Instant.now())
+                .invitedAt(Instant.now())
+                .project(project)
+                .build();
+
         project = projectRepository.save(project);
+        projectMemberRepository.save(projectMember);
+
         return projectMapper.toProjectResponse(project);
     }
 
@@ -54,6 +71,8 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public ProjectResponse updateProject(Long projectId, ProjectRequest request, Long userId) {
         Project project = getAccessibleProjectById(userId, projectId);
+        // project owner -  we will have to add using authorization security methods
+
         project.setName(request.name());
         project = projectRepository.save(project);
         return projectMapper.toProjectResponse(project);
@@ -62,10 +81,7 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public void softDeleteProject(Long projectId, Long userId) {
         Project project = getAccessibleProjectById(userId, projectId);
-        if(!project.getOwner().getId().equals(userId)){
-            throw new RuntimeException("you are not allowed to delete");
-        }
-
+        // project owner -  we will have to add using authorization security methods
         project.setDeletedAt(Instant.now());
         projectRepository.save(project);
     }

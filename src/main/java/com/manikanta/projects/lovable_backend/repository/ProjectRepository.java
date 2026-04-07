@@ -14,7 +14,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 
     @Query("""
             SELECT p from Project p
-            WHERE p.owner.id = :userId AND p.deletedAt IS NULL
+            WHERE p.deletedAt IS NULL
             ORDER BY p.updatedAt Desc
             """)
     List<Project> findAllAccessibleByUser(@Param("userId") Long userId);
@@ -22,8 +22,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 
     @Query("""
             SELECT p from Project p
-            LEFT JOIN FETCH p.owner
-            WHERE p.id = :projectId AND p.deletedAt IS NULL AND p.owner.id = :userId
+            WHERE p.id = :projectId AND p.deletedAt IS NULL
             """
     )
     Optional<Project> findAccessibleProjectById(@Param("userId")Long userId,

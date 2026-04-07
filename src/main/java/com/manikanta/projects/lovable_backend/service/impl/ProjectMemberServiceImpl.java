@@ -36,18 +36,13 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     @Override
     public List<MemeberResponse> getProjectMembers(Long projectId, Long userId) {
         Project project = getAccessibleProjectById(userId, projectId);
-        List<MemeberResponse> memeberResponseList = new ArrayList<>();
-        memeberResponseList.add(projectMemberMapper.toMemberResponseFromOwner(project.getOwner()));
-        memeberResponseList.addAll(projectMemberRepository.findByIdProjectId(projectId).stream().map(projectMemberMapper::toProjectMemberResponseFromMember).toList());
-        return memeberResponseList;
+        return projectMemberRepository.findByIdProjectId(projectId).stream().map(projectMemberMapper::toProjectMemberResponseFromMember).toList();
     }
 
     @Override
     public MemeberResponse inviteMember(Long projectId, InviteMemberRequest request, Long userId) {
         Project project = getAccessibleProjectById(userId, projectId);
-        if(!project.getOwner().getId().equals(userId)){
-            throw new RuntimeException("you are not allowed");
-        }
+        // project owner -  we will have to add using authorization security methods
 
         User invitee = userRepository.findByEmail(request.email()).orElseThrow();
 
@@ -69,9 +64,8 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     @Override
     public MemeberResponse updateMemberRole(Long projectId, Long memberId, UpdateMemberRoleRequest request, Long userId) {
         Project project = getAccessibleProjectById(userId, projectId);
-        if(!project.getOwner().getId().equals(userId)){
-            throw new RuntimeException("you are not allowed");
-        }
+        // project owner -  we will have to add using authorization security methods
+
         ProjectMemberId projectMemberId = new ProjectMemberId(projectId, memberId);
         ProjectMember projectMember = projectMemberRepository.findById(projectMemberId).orElseThrow();
         projectMember.setRole(request.role());
@@ -83,9 +77,7 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     @Override
     public void removeProjectMember(Long projectId, Long memberId, Long userId) {
         Project project = getAccessibleProjectById(userId, projectId);
-        if(!project.getOwner().getId().equals(userId)){
-            throw new RuntimeException("you are not allowed");
-        }
+        // project owner -  we will have to add using authorization security methods
         ProjectMemberId projectMemberId = new ProjectMemberId(projectId, memberId);
         if(!projectMemberRepository.existsById(projectMemberId)){
             throw new RuntimeException("does not exists");
