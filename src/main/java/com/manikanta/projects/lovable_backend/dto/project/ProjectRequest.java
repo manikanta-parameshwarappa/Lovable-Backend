@@ -1,6 +1,8 @@
 package com.manikanta.projects.lovable_backend.dto.project;
 
+import jakarta.validation.constraints.NotBlank;
+
 public record ProjectRequest(
-    String name
+    @NotBlank String name
 ) {
 }

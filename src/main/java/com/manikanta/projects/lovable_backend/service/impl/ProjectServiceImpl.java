@@ -5,6 +5,7 @@ import com.manikanta.projects.lovable_backend.dto.project.ProjectResponse;
 import com.manikanta.projects.lovable_backend.dto.project.ProjectSummaryResponse;
 import com.manikanta.projects.lovable_backend.entity.Project;
 import com.manikanta.projects.lovable_backend.entity.User;
+import com.manikanta.projects.lovable_backend.error.ResourceNotFoundException;
 import com.manikanta.projects.lovable_backend.mapper.ProjectMapper;
 import com.manikanta.projects.lovable_backend.repository.ProjectRepository;
 import com.manikanta.projects.lovable_backend.repository.UserRepository;
@@ -71,6 +72,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     // Internal Functions
     public Project getAccessibleProjectById(Long userId, Long projectId){
-        return projectRepository.findAccessibleProjectById(userId, projectId).orElseThrow();
+        return projectRepository.findAccessibleProjectById(userId, projectId)
+                .orElseThrow(() -> new ResourceNotFoundException("Project", projectId.toString()));
     }
 }

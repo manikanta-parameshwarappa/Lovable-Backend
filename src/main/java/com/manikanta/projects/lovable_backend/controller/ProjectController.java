@@ -5,6 +5,7 @@ import com.manikanta.projects.lovable_backend.dto.project.ProjectRequest;
 import com.manikanta.projects.lovable_backend.dto.project.ProjectResponse;
 import com.manikanta.projects.lovable_backend.dto.project.ProjectSummaryResponse;
 import com.manikanta.projects.lovable_backend.service.ProjectService;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -33,12 +34,12 @@ public class ProjectController {
     }
 
     @PostMapping
-    public ResponseEntity<ProjectResponse> createProject(@RequestBody ProjectRequest request) {
+    public ResponseEntity<ProjectResponse> createProject(@RequestBody @Valid ProjectRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(projectService.createProject(request,1L));
     }
 
     @PatchMapping("{id}")
-    public ResponseEntity<ProjectResponse> updateProject(@PathVariable Long id, @RequestBody ProjectRequest request) {
+    public ResponseEntity<ProjectResponse> updateProject(@PathVariable Long id, @RequestBody @Valid ProjectRequest request) {
         return ResponseEntity.ok(projectService.updateProject(id, request,1L));
     }
 
