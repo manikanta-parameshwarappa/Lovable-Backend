@@ -7,6 +7,7 @@ import com.manikanta.projects.lovable_backend.entity.User;
 import com.manikanta.projects.lovable_backend.error.BadRequestException;
 import com.manikanta.projects.lovable_backend.mapper.UserMapper;
 import com.manikanta.projects.lovable_backend.repository.UserRepository;
+import com.manikanta.projects.lovable_backend.security.AuthUtil;
 import com.manikanta.projects.lovable_backend.service.AuthService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ public class AuthServiceImpl implements AuthService {
     UserRepository userRepository;
     UserMapper userMapper;
     PasswordEncoder passwordEncoder;
+    AuthUtil authUtil;
 
     @Override
     public AuthResponse signup(SignupRequest request) {
@@ -33,7 +35,9 @@ public class AuthServiceImpl implements AuthService {
         user.setPassword(passwordEncoder.encode(request.password()));
         user = userRepository.save(user);
 
-        return new AuthResponse("dummy", userMapper.toUserProfileResponse(user));
+        String token = authUtil.generateAccessToken(user);
+
+        return new AuthResponse(token, userMapper.toUserProfileResponse(user));
     }
 
     @Override
