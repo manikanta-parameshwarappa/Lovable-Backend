@@ -13,16 +13,15 @@ import com.manikanta.projects.lovable_backend.mapper.ProjectMapper;
 import com.manikanta.projects.lovable_backend.repository.ProjectMemberRepository;
 import com.manikanta.projects.lovable_backend.repository.ProjectRepository;
 import com.manikanta.projects.lovable_backend.repository.UserRepository;
+import com.manikanta.projects.lovable_backend.security.AuthUtil;
 import com.manikanta.projects.lovable_backend.service.ProjectService;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -35,9 +34,11 @@ public class ProjectServiceImpl implements ProjectService {
     UserRepository userRepository;
     ProjectMapper projectMapper;
     ProjectMemberRepository projectMemberRepository;
+    AuthUtil authUtil;
 
     @Override
-    public ProjectResponse createProject(ProjectRequest request, Long userId) {
+    public ProjectResponse createProject(ProjectRequest request) {
+        Long userId = authUtil.getCurrentUserId();
         User owner = userRepository.findById(userId).orElseThrow();
         Project project = Project.builder().name(request.name()).isPublic(false).build(); // why its not default ?
         ProjectMemberId projectMemberId = new ProjectMemberId(project.getId(), owner.getId());
@@ -57,19 +58,22 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public List<ProjectSummaryResponse> getUserProjects(Long userId) {
+    public List<ProjectSummaryResponse> getUserProjects() {
+        Long userId = authUtil.getCurrentUserId();
         List<Project> projects = projectRepository.findAllAccessibleByUser(userId);
         return projectMapper.toListOfProjectSummaryResponse(projects);
     }
 
     @Override
-    public ProjectResponse getUserProjectById(Long userId, Long projectId) {
+    public ProjectResponse getUserProjectById(Long projectId) {
+        Long userId = authUtil.getCurrentUserId();
         Project project = getAccessibleProjectById(userId, projectId);
         return projectMapper.toProjectResponse(project);
     }
 
     @Override
-    public ProjectResponse updateProject(Long projectId, ProjectRequest request, Long userId) {
+    public ProjectResponse updateProject(Long projectId, ProjectRequest request) {
+        Long userId = authUtil.getCurrentUserId();
         Project project = getAccessibleProjectById(userId, projectId);
         // project owner -  we will have to add using authorization security methods
 
@@ -79,7 +83,8 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public void softDeleteProject(Long projectId, Long userId) {
+    public void softDeleteProject(Long projectId) {
+        Long userId = authUtil.getCurrentUserId();
         Project project = getAccessibleProjectById(userId, projectId);
         // project owner -  we will have to add using authorization security methods
         project.setDeletedAt(Instant.now());
