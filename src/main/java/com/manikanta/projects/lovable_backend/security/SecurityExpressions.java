@@ -1,6 +1,7 @@
 package com.manikanta.projects.lovable_backend.security;
 
 import com.manikanta.projects.lovable_backend.enums.ProjectMemberRole;
+import com.manikanta.projects.lovable_backend.enums.ProjectPermission;
 import com.manikanta.projects.lovable_backend.repository.ProjectMemberRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +19,7 @@ public class SecurityExpressions {
         Long userId = authUtil.getCurrentUserId();
 
         return projectMemberRepository.findRoleByProjectIdAndUserId(projectId, userId).
-                map(role -> role.equals(ProjectMemberRole.OWNER) || role.equals(ProjectMemberRole.EDITOR) || role.equals(ProjectMemberRole.VIEWER))
+                map(role -> role.getPermissions().contains(ProjectPermission.VIEW))
                 .orElse(false);
     }
 
@@ -26,7 +27,7 @@ public class SecurityExpressions {
         Long userId = authUtil.getCurrentUserId();
 
         return projectMemberRepository.findRoleByProjectIdAndUserId(projectId, userId).
-                map(role -> role.equals(ProjectMemberRole.OWNER) || role.equals(ProjectMemberRole.EDITOR))
+                map(role -> role.getPermissions().contains(ProjectPermission.EDIT))
                 .orElse(false);
     }
 }
