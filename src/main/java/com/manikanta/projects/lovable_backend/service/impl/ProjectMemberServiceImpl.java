@@ -11,6 +11,7 @@ import com.manikanta.projects.lovable_backend.mapper.ProjectMemberMapper;
 import com.manikanta.projects.lovable_backend.repository.ProjectMemberRepository;
 import com.manikanta.projects.lovable_backend.repository.ProjectRepository;
 import com.manikanta.projects.lovable_backend.repository.UserRepository;
+import com.manikanta.projects.lovable_backend.security.AuthUtil;
 import com.manikanta.projects.lovable_backend.service.ProjectMemberService;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
@@ -31,15 +32,18 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     ProjectRepository projectRepository;
     ProjectMemberMapper projectMemberMapper;
     UserRepository userRepository;
+    AuthUtil authUtil;
 
     @Override
-    public List<MemeberResponse> getProjectMembers(Long projectId, Long userId) {
+    public List<MemeberResponse> getProjectMembers(Long projectId) {
+        Long userId = authUtil.getCurrentUserId();
         Project project = getAccessibleProjectById(userId, projectId);
         return projectMemberRepository.findByIdProjectId(projectId).stream().map(projectMemberMapper::toProjectMemberResponseFromMember).toList();
     }
 
     @Override
-    public MemeberResponse inviteMember(Long projectId, InviteMemberRequest request, Long userId) {
+    public MemeberResponse inviteMember(Long projectId, InviteMemberRequest request) {
+        Long userId = authUtil.getCurrentUserId();
         Project project = getAccessibleProjectById(userId, projectId);
         // project owner -  we will have to add using authorization security methods
 
@@ -61,7 +65,8 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     }
 
     @Override
-    public MemeberResponse updateMemberRole(Long projectId, Long memberId, UpdateMemberRoleRequest request, Long userId) {
+    public MemeberResponse updateMemberRole(Long projectId, Long memberId, UpdateMemberRoleRequest request) {
+        Long userId = authUtil.getCurrentUserId();
         Project project = getAccessibleProjectById(userId, projectId);
         // project owner -  we will have to add using authorization security methods
 
@@ -74,7 +79,8 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
 
 
     @Override
-    public void removeProjectMember(Long projectId, Long memberId, Long userId) {
+    public void removeProjectMember(Long projectId, Long memberId) {
+        Long userId = authUtil.getCurrentUserId();
         Project project = getAccessibleProjectById(userId, projectId);
         // project owner -  we will have to add using authorization security methods
         ProjectMemberId projectMemberId = new ProjectMemberId(projectId, memberId);
