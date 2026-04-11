@@ -80,6 +80,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
+    @PreAuthorize("@security.canEditProject(#projectId)")
     public ProjectResponse updateProject(Long projectId, ProjectRequest request) {
         Long userId = authUtil.getCurrentUserId();
         Project project = getAccessibleProjectById(userId, projectId);
