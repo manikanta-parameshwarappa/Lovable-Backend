@@ -39,7 +39,13 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public ProjectResponse createProject(ProjectRequest request) {
         Long userId = authUtil.getCurrentUserId();
-        User owner = userRepository.findById(userId).orElseThrow();
+        // User owner = userRepository.findById(userId).orElseThrow(); // this makes a db call to avoid use refrencing
+
+
+        // it creates a hibernate proxy object , works in @transactional context
+        User owner = userRepository.getReferenceById(userId); // makes db call if we need any other further details only
+
+
         Project project = Project.builder().name(request.name()).isPublic(false).build(); // why its not default ?
         ProjectMemberId projectMemberId = new ProjectMemberId(project.getId(), owner.getId());
         ProjectMember projectMember = ProjectMember.builder()
