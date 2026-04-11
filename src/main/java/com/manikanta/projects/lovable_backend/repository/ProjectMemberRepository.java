@@ -16,7 +16,7 @@ public interface ProjectMemberRepository extends JpaRepository<ProjectMember, Pr
    List<ProjectMember> findByIdProjectId(Long ProjectId);
 
     @Query("""
-            SELECT pm.projectRole FROM ProjectMember pm
+            SELECT pm.role FROM ProjectMember pm
             WHERE pm.id.projectId = :projectId AND pm.id.userId = :userId
             """)
     Optional<ProjectMemberRole> findRoleByProjectIdAndUserId(@Param("projectId") Long projectId,

@@ -13,7 +13,7 @@ import java.util.Optional;
 public interface ProjectRepository extends JpaRepository<Project, Long> {
 
     @Query("""
-            SELECT p as project, pm.projectRole as role
+            SELECT p as project, pm.role as role
             FROM Project p
             JOIN ProjectMember pm ON pm.project.id = p.id
             WHERE pm.user.id = :userId
