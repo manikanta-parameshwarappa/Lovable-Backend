@@ -29,3 +29,26 @@ public class Plan {
 
     Boolean active;
 }
+
+
+// data
+
+// record: 1
+// id: 1
+// name: Pro Plan
+// stripePriceId: price_1TLQiPFJIiYbqsX7KUYPI7tf ( get this from the stripe dashboard after creating this particular product)
+// maxProjects: 3
+// maxTokensPerDay: 10000
+// maxPreviews: 1
+// unlimitedTokens: true
+// active: true
+
+// record: 2
+// id: 2
+// name: Business Plan
+// stripePriceId: price_1TLQjkFJIiYbqsX7qQHnr9lK
+// maxProjects: 10
+// maxTokensPerDay: 50000
+// maxPreviews: 3
+// unlimitedTokens: true
+// active: true
