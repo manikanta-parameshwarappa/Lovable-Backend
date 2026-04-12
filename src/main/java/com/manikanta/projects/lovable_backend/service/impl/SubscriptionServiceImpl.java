@@ -17,6 +17,9 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     @Override
     public CheckoutResponse createCheckoutSessionUrl(CheckoutRequest request) {
+        // the goal of this particular function is as soon as the user the btn ,
+        // we are going to redirect the user to another URL where they can pay via stripe
+
         return null;
     }
 
