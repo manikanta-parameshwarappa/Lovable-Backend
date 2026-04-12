@@ -18,3 +18,5 @@ jwt:
 
 stripe:
   secret: STRIPE_SECRET_REMOVED
+
+client.url: http://localhost:8080
