@@ -15,3 +15,6 @@ spring:
         format_sql: true
 jwt:
   secret-key: jwtsecretkeyrandom123
+
+stripe:
+  secret: STRIPE_SECRET_REMOVED
