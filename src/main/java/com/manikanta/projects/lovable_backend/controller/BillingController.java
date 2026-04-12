@@ -2,6 +2,7 @@ package com.manikanta.projects.lovable_backend.controller;
 
 import com.manikanta.projects.lovable_backend.dto.subscription.*;
 import com.manikanta.projects.lovable_backend.entity.Subscription;
+import com.manikanta.projects.lovable_backend.service.PaymentProcessor;
 import com.manikanta.projects.lovable_backend.service.PlanService;
 import com.manikanta.projects.lovable_backend.service.SubscriptionService;
 import lombok.AccessLevel;
@@ -21,6 +22,7 @@ import java.util.List;
 public class BillingController {
   PlanService planService;
   SubscriptionService subscriptionService;
+  PaymentProcessor paymentProcessor;
 
   @GetMapping("/api/plans")
   public ResponseEntity<List<PlanResponse>> getAllPlans(){
@@ -37,13 +39,13 @@ public class BillingController {
   public ResponseEntity<CheckoutResponse> createCustomResponse(
           @RequestBody CheckoutRequest request
   ){
-        return ResponseEntity.ok(subscriptionService.createCheckoutSessionUrl(request));
+        return ResponseEntity.ok(paymentProcessor.createCheckoutSessionUrl(request));
   }
 
 
   @PostMapping("/api/payments/portal")
   public ResponseEntity<PortalResponse> openCustomPortal(){
-      return ResponseEntity.ok(subscriptionService.openCustomPortal());
+      return ResponseEntity.ok(paymentProcessor.openCustomerPortal());
   }
 
 }
