@@ -4,33 +4,28 @@ import com.manikanta.projects.lovable_backend.dto.subscription.CheckoutRequest;
 import com.manikanta.projects.lovable_backend.dto.subscription.CheckoutResponse;
 import com.manikanta.projects.lovable_backend.dto.subscription.PortalResponse;
 import com.manikanta.projects.lovable_backend.entity.Plan;
-import com.manikanta.projects.lovable_backend.entity.User;
 import com.manikanta.projects.lovable_backend.error.ResourceNotFoundException;
 import com.manikanta.projects.lovable_backend.repository.PlanRepository;
-import com.manikanta.projects.lovable_backend.repository.UserRepository;
 import com.manikanta.projects.lovable_backend.security.AuthUtil;
 import com.manikanta.projects.lovable_backend.service.PaymentProcessor;
 import com.stripe.exception.StripeException;
 import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class StripePaymentProcessor implements PaymentProcessor {
-    AuthUtil authUtil;
-    PlanRepository planRepository;
-    UserRepository userRepository;
+    private final AuthUtil authUtil;
+    private final PlanRepository planRepository;
 
     @Value("${client.url}")
     private String frontendUrl;
 
+    @Override
     public CheckoutResponse createCheckoutSessionUrl(CheckoutRequest request) {
         // the goal of this particular function is as soon as the user the btn ,
         // we are going to redirect the user to another URL where they can pay via stripe
