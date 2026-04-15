@@ -4,8 +4,10 @@ import com.manikanta.projects.lovable_backend.dto.subscription.CheckoutRequest;
 import com.manikanta.projects.lovable_backend.dto.subscription.CheckoutResponse;
 import com.manikanta.projects.lovable_backend.dto.subscription.PortalResponse;
 import com.manikanta.projects.lovable_backend.entity.Plan;
+import com.manikanta.projects.lovable_backend.entity.User;
 import com.manikanta.projects.lovable_backend.error.ResourceNotFoundException;
 import com.manikanta.projects.lovable_backend.repository.PlanRepository;
+import com.manikanta.projects.lovable_backend.repository.UserRepository;
 import com.manikanta.projects.lovable_backend.security.AuthUtil;
 import com.manikanta.projects.lovable_backend.service.PaymentProcessor;
 import com.stripe.exception.StripeException;
@@ -21,6 +23,7 @@ import org.springframework.stereotype.Service;
 public class StripePaymentProcessor implements PaymentProcessor {
     private final AuthUtil authUtil;
     private final PlanRepository planRepository;
+    private final UserRepository userRepository;
 
     @Value("${client.url}")
     private String frontendUrl;
@@ -34,6 +37,8 @@ public class StripePaymentProcessor implements PaymentProcessor {
                 new ResourceNotFoundException("Plan", request.planId().toString()));
 
         Long userId = authUtil.getCurrentUserId();
+        User user = userRepository.findById(userId).orElseThrow(() ->
+                new ResourceNotFoundException("user", userId.toString()));
         // Stripe Params builder : refer stripe documentation to impl this
 
         var params = SessionCreateParams.builder()
@@ -53,6 +58,12 @@ public class StripePaymentProcessor implements PaymentProcessor {
                 .putMetadata("plan_id", plan.getId().toString());
 
         try {
+            String stripeCustomerId = user.getStripeCustomerId();
+            if(stripeCustomerId == null || stripeCustomerId.isEmpty()) {
+                params.setCustomerEmail(user.getUsername());
+            } else {
+                params.setCustomer(stripeCustomerId); // stripe customer Id
+            }
             Session session = Session.create(params.build()); // making api call to the Stripe Backend
             return new CheckoutResponse(session.getUrl());
         } catch (StripeException e) {
