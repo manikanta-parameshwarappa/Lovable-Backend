@@ -98,7 +98,7 @@ public class BillingController {
             }
 
             // Pass to your processor
-            // paymentProcessor.handleWebhookEvent(event.getType(), stripeObject, metadata);
+            paymentProcessor.handleWebhookEvent(event.getType(), stripeObject, metadata);
             return ResponseEntity.ok().build();
 
         } catch (SignatureVerificationException e) {

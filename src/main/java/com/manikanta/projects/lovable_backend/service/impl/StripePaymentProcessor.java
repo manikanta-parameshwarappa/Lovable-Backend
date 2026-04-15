@@ -11,13 +11,17 @@ import com.manikanta.projects.lovable_backend.repository.UserRepository;
 import com.manikanta.projects.lovable_backend.security.AuthUtil;
 import com.manikanta.projects.lovable_backend.service.PaymentProcessor;
 import com.stripe.exception.StripeException;
+import com.stripe.model.StripeObject;
 import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class StripePaymentProcessor implements PaymentProcessor {
@@ -74,5 +78,10 @@ public class StripePaymentProcessor implements PaymentProcessor {
     @Override
     public PortalResponse openCustomerPortal() {
         return null;
+    }
+
+    @Override
+    public void handleWebhookEvent(String type, StripeObject stripeObject, Map<String, String> metadata) {
+        log.debug("Handling stripe event: {}", type);
     }
 }
