@@ -18,11 +18,11 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     @Override
-    public void updateSubscription(String id, SubscriptionStatus status, Instant periodStart, Instant periodEnd, Boolean cancelAtPeriodEnd, Long planId) {
+    public void updateSubscription(String gatewaySubscriptionId, SubscriptionStatus status, Instant periodStart, Instant periodEnd, Boolean cancelAtPeriodEnd, Long planId) {
     }
 
     @Override
-    public void cancelSubscription(String id) {
+    public void cancelSubscription(String gatewaySubscriptionId) {
     }
 
     @Override
