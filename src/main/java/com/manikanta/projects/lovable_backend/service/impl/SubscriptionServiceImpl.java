@@ -24,4 +24,9 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     @Override
     public void updateSubscription(String id, SubscriptionStatus status, Instant periodStart, Instant periodEnd, Boolean cancelAtPeriodEnd, Long planId) {
     }
+
+    @Override
+    public void cancelSubscription(String id) {
+        
+    }
 }

@@ -140,13 +140,18 @@ public class StripePaymentProcessor implements PaymentProcessor {
         );
     }
 
+    private void handleCustomerSubscriptionDeleted(Subscription subscription) {
+        if (subscription == null) {
+            log.error("subscription object was null inside handleCustomerSubscriptionDeleted");
+            return;
+        }
+        subscriptionService.cancelSubscription(subscription.getId());
+    }
+
     private void handleInvoicePaymentFailed(Invoice stripeObject) {
     }
 
     private void handleInvoicePaid(Invoice stripeObject) {
-    }
-
-    private void handleCustomerSubscriptionDeleted(Subscription stripeObject) {
     }
 
     /// Utility Methods
