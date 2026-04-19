@@ -9,4 +9,5 @@ public interface SubscriptionService {
     void updateSubscription(String id, SubscriptionStatus status, Instant periodStart, Instant periodEnd, Boolean cancelAtPeriodEnd, Long planId);
     void cancelSubscription(String id);
     void renewSubscriptionPeriod(String subId, Instant periodStart, Instant periodEnd);
+    void markSubscriptionPastDue(String subId);
 }
