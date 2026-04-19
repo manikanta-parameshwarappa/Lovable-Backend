@@ -83,5 +83,29 @@ public class StripePaymentProcessor implements PaymentProcessor {
     @Override
     public void handleWebhookEvent(String type, StripeObject stripeObject, Map<String, String> metadata) {
         log.debug("Handling stripe event: {}", type);
+
+        switch (type) {
+            case "checkout.session.completed" -> handleCheckoutSessionCompleted(); // one-time, on checkout completed
+            case "customer.subscription.updated" -> handleCustomerSubscriptionUpdated(); // when user cancels, upgrades or any updates
+            case "customer.subscription.deleted" -> handleCustomerSubscriptionDeleted(); // when subscription ends, revoke the access
+            case "invoice.paid" -> handleInvoicePaid(); // when invoice is paid
+            case "invoice.payment_failed" -> handleInvoicePaymentFailed(); // when invoice is not paid, mark as PAST_DUE
+            default -> log.debug("Ignoring the event: {}", type);
+        }
+    }
+
+    private void handleInvoicePaymentFailed() {
+    }
+
+    private void handleInvoicePaid() {
+    }
+
+    private void handleCustomerSubscriptionDeleted() {
+    }
+
+    private void handleCustomerSubscriptionUpdated() {
+    }
+
+    private void handleCheckoutSessionCompleted() {
     }
 }
