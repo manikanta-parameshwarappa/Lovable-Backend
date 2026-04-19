@@ -10,6 +10,7 @@ import com.manikanta.projects.lovable_backend.repository.PlanRepository;
 import com.manikanta.projects.lovable_backend.repository.UserRepository;
 import com.manikanta.projects.lovable_backend.security.AuthUtil;
 import com.manikanta.projects.lovable_backend.service.PaymentProcessor;
+import com.manikanta.projects.lovable_backend.service.SubscriptionService;
 import com.stripe.exception.StripeException;
 import com.stripe.model.StripeObject;
 import com.stripe.model.*;
@@ -29,6 +30,8 @@ public class StripePaymentProcessor implements PaymentProcessor {
     private final AuthUtil authUtil;
     private final PlanRepository planRepository;
     private final UserRepository userRepository;
+    private final SubscriptionService subscriptionService;
+
 
     @Value("${client.url}")
     private String frontendUrl;
@@ -95,7 +98,24 @@ public class StripePaymentProcessor implements PaymentProcessor {
         }
     }
 
-    private void handleCheckoutSessionCompleted(Session stripeObject, Map<String, String> metadata) {
+    private void handleCheckoutSessionCompleted(Session session, Map<String, String> metadata) {
+        if(session == null) {
+            log.error("session object was null");
+            return;
+        }
+        Long userId = Long.parseLong(metadata.get("user_id"));
+        Long planId = Long.parseLong(metadata.get("plan_id"));
+        String subscriptionId = session.getSubscription();
+        String customerId = session.getCustomer();
+        User user = getUser(userId);
+        if(user.getStripeCustomerId() == null) {
+            user.setStripeCustomerId(customerId);
+            userRepository.save(user);
+        }
+        subscriptionService.activateSubscription(userId, planId, subscriptionId, customerId);
+    }
+
+    private void handleCustomerSubscriptionUpdated(Subscription stripeObject) {
     }
 
     private void handleInvoicePaymentFailed(Invoice stripeObject) {
@@ -107,6 +127,9 @@ public class StripePaymentProcessor implements PaymentProcessor {
     private void handleCustomerSubscriptionDeleted(Subscription stripeObject) {
     }
 
-    private void handleCustomerSubscriptionUpdated(Subscription stripeObject) {
+    /// Utility Methods
+    private User getUser(Long userId) {
+        return userRepository.findById(userId).orElseThrow(() ->
+                new ResourceNotFoundException("user", userId.toString()));
     }
 }
