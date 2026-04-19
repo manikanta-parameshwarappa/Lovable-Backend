@@ -12,6 +12,7 @@ import com.manikanta.projects.lovable_backend.security.AuthUtil;
 import com.manikanta.projects.lovable_backend.service.PaymentProcessor;
 import com.stripe.exception.StripeException;
 import com.stripe.model.StripeObject;
+import com.stripe.model.*;
 import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;
 import lombok.RequiredArgsConstructor;
@@ -85,27 +86,27 @@ public class StripePaymentProcessor implements PaymentProcessor {
         log.debug("Handling stripe event: {}", type);
 
         switch (type) {
-            case "checkout.session.completed" -> handleCheckoutSessionCompleted(); // one-time, on checkout completed
-            case "customer.subscription.updated" -> handleCustomerSubscriptionUpdated(); // when user cancels, upgrades or any updates
-            case "customer.subscription.deleted" -> handleCustomerSubscriptionDeleted(); // when subscription ends, revoke the access
-            case "invoice.paid" -> handleInvoicePaid(); // when invoice is paid
-            case "invoice.payment_failed" -> handleInvoicePaymentFailed(); // when invoice is not paid, mark as PAST_DUE
+            case "checkout.session.completed" -> handleCheckoutSessionCompleted((Session) stripeObject, metadata); // one-time, on checkout completed
+            case "customer.subscription.updated" -> handleCustomerSubscriptionUpdated((Subscription) stripeObject); // when user cancels, upgrades or any updates
+            case "customer.subscription.deleted" -> handleCustomerSubscriptionDeleted((Subscription) stripeObject); // when subscription ends, revoke the access
+            case "invoice.paid" -> handleInvoicePaid((Invoice) stripeObject); // when invoice is paid
+            case "invoice.payment_failed" -> handleInvoicePaymentFailed((Invoice) stripeObject); // when invoice is not paid, mark as PAST_DUE
             default -> log.debug("Ignoring the event: {}", type);
         }
     }
 
-    private void handleInvoicePaymentFailed() {
+    private void handleCheckoutSessionCompleted(Session stripeObject, Map<String, String> metadata) {
     }
 
-    private void handleInvoicePaid() {
+    private void handleInvoicePaymentFailed(Invoice stripeObject) {
     }
 
-    private void handleCustomerSubscriptionDeleted() {
+    private void handleInvoicePaid(Invoice stripeObject) {
     }
 
-    private void handleCustomerSubscriptionUpdated() {
+    private void handleCustomerSubscriptionDeleted(Subscription stripeObject) {
     }
 
-    private void handleCheckoutSessionCompleted() {
+    private void handleCustomerSubscriptionUpdated(Subscription stripeObject) {
     }
 }
