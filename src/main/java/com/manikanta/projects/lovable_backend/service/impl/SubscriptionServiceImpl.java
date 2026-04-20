@@ -11,6 +11,7 @@ import com.manikanta.projects.lovable_backend.repository.SubscriptionRepository;
 import com.manikanta.projects.lovable_backend.repository.UserRepository;
 import com.manikanta.projects.lovable_backend.security.AuthUtil;
 import com.manikanta.projects.lovable_backend.service.SubscriptionService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -85,6 +86,17 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     @Override
     public void markSubscriptionPastDue(String gatewaySubscriptionId) {
+        Subscription subscription = getSubscription(gatewaySubscriptionId);
+
+        if(subscription.getStatus() == SubscriptionStatus.PAST_DUE) {
+            log.debug("Subscription is already past due, gatewaySubscriptionId: {}", gatewaySubscriptionId);
+            return;
+        }
+
+        subscription.setStatus(SubscriptionStatus.PAST_DUE);
+        subscriptionRepository.save(subscription);
+
+        // Notify user via email..
     }
 
 
