@@ -7,6 +7,7 @@ import com.manikanta.projects.lovable_backend.enums.SubscriptionStatus;
 import com.manikanta.projects.lovable_backend.error.ResourceNotFoundException;
 import com.manikanta.projects.lovable_backend.mapper.SubscriptionMapper;
 import com.manikanta.projects.lovable_backend.repository.PlanRepository;
+import com.manikanta.projects.lovable_backend.repository.ProjectMemberRepository;
 import com.manikanta.projects.lovable_backend.repository.SubscriptionRepository;
 import com.manikanta.projects.lovable_backend.repository.UserRepository;
 import com.manikanta.projects.lovable_backend.security.AuthUtil;
@@ -28,6 +29,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private final SubscriptionMapper subscriptionMapper;
     private final UserRepository userRepository;
     private final PlanRepository planRepository;
+    private final ProjectMemberRepository projectMemberRepository;
 
     @Override
     public SubscriptionResponse getCurrentSubscription() {
@@ -137,6 +139,20 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         // Notify user via email..
     }
 
+    private final Integer FREE_TIER_PROJECTS_ALLOWED = 1;
+
+    @Override
+    public boolean canCreateNewProject() {
+        Long userId = authUtil.getCurrentUserId();
+        SubscriptionResponse currentSubscription = getCurrentSubscription();
+        int countOfOwnedProjects = projectMemberRepository.countProjectOwnedByUser(userId);
+
+        if(currentSubscription.plan() == null) {
+            return countOfOwnedProjects < FREE_TIER_PROJECTS_ALLOWED;
+        }
+
+        return countOfOwnedProjects < currentSubscription.plan().maxProjects();
+    }
 
     ///  Utility methods
 
