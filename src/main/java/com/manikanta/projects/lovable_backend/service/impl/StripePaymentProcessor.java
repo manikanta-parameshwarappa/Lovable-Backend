@@ -6,6 +6,7 @@ import com.manikanta.projects.lovable_backend.dto.subscription.PortalResponse;
 import com.manikanta.projects.lovable_backend.entity.Plan;
 import com.manikanta.projects.lovable_backend.entity.User;
 import com.manikanta.projects.lovable_backend.enums.SubscriptionStatus;
+import com.manikanta.projects.lovable_backend.error.BadRequestException;
 import com.manikanta.projects.lovable_backend.error.ResourceNotFoundException;
 import com.manikanta.projects.lovable_backend.repository.PlanRepository;
 import com.manikanta.projects.lovable_backend.repository.UserRepository;
@@ -82,7 +83,27 @@ public class StripePaymentProcessor implements PaymentProcessor {
 
     @Override
     public PortalResponse openCustomerPortal() {
-        return null;
+        // go to payment provider (stripe in this case ) documentation to understand this and to implement
+        Long userId = authUtil.getCurrentUserId();
+        User user = getUser(userId);
+        String stripeCustomerId = user.getStripeCustomerId();
+
+        if(stripeCustomerId == null || stripeCustomerId.isEmpty()) {
+            throw new BadRequestException("User does not have a Stripe Customer Id, UserId:"+userId);
+        }
+
+        try {
+            var portalSession = com.stripe.model.billingportal.Session.create(
+                    com.stripe.param.billingportal.SessionCreateParams.builder()
+                            .setCustomer(stripeCustomerId)
+                            .setReturnUrl(frontendUrl)
+                            .build()
+            ); // connect to stripe portal
+
+            return new PortalResponse(portalSession.getUrl());
+        } catch (StripeException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
