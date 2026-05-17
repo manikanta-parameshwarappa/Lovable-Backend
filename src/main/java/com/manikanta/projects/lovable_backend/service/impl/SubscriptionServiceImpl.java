@@ -139,7 +139,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         // Notify user via email..
     }
 
-    private final Integer FREE_TIER_PROJECTS_ALLOWED = 1;
+    private final Integer FREE_TIER_PROJECTS_ALLOWED = 100;
 
     @Override
     public boolean canCreateNewProject() {
